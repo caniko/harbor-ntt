@@ -23,19 +23,14 @@
     system = "x86_64-linux";
     pkgs = nixpkgs.legacyPackages.${system};
     lib = import ./lib {inherit harbor-meta;};
+    treefmt = treefmt-nix.lib.evalModule pkgs (import ./nix/treefmt.nix {inherit harbor-meta;});
   in {
     inherit lib;
 
-    checks.${system} = import ./checks {
-      inherit pkgs self;
-    };
+    checks.${system} =
+      (import ./checks {inherit pkgs self;})
+      // {formatting = treefmt.config.build.check self;};
 
-    # This repository contains Nix infrastructure; downstream NTT projects
-    # compose Rust, JavaScript and Solidity modules for their own sources.
-    formatter.${system} =
-      (treefmt-nix.lib.evalModule pkgs {
-        imports = [harbor-meta.treefmtModules.nix harbor-meta.treefmtModules.toml];
-        projectRootFile = "flake.nix";
-      }).config.build.wrapper;
+    formatter.${system} = treefmt.config.build.wrapper;
   };
 }
