@@ -3,5 +3,5 @@
   # compose Rust, JavaScript and Solidity modules for their own sources.
   imports = [harbor-meta.treefmtModules.nix harbor-meta.treefmtModules.toml];
   projectRootFile = "flake.nix";
-  settings.global.excludes = [".github/workflows/*.yaml"];
+  settings.excludes = [".github/workflows/*.yaml"];
 }
